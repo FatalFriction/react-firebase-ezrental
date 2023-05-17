@@ -19,10 +19,6 @@ import {
   cartIconStyles,
 } from './NavbarLinks.styles';
 
-import { containerStyles, searchStyles } from '../../../Screens/FilterProductsScreen/FilterProductsScreen.styles';
-import SearchModal from '../../SearchModal/SearchModal';
-import { Fab } from '@mui/material';
-
 const NavbarLinks = () => {
   const [isSidebarActive, setIsSidebarActive] = useState(false);
   const cart = useSelector((state) => state.cart);
@@ -30,10 +26,6 @@ const NavbarLinks = () => {
   const [user,setUser] = useState(null);
   const url = 'https://assets4.lottiefiles.com/packages/lf20_O1znIOC9aN.json';
 
-  const surl = 'https://assets5.lottiefiles.com/packages/lf20_4EjgStPG5C.json';
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -57,24 +49,6 @@ const NavbarLinks = () => {
             />
           </span>
           <span>
-          <div style={containerStyles}>
-            <div onClick={handleOpen}>
-              <Player autoplay loop src={surl} style={searchStyles} />
-            </div>
-            <SearchModal open={open} handleClose={handleClose} />
-          </div>
-          <Fab
-            size="large"
-            sx={{
-              backgroundColor: '#eddd5e',
-              width: '80px',
-              height: '80px',
-            }}
-            aria-label="search"
-          >
-            <Player autoplay loop src={surl} />
-          </Fab>
-
           </span>
           {/* Links */}
           <ul css={navLinksStyles}>

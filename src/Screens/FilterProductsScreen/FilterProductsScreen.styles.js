@@ -7,11 +7,12 @@ export const searchStyles = {
     marginTop: '10px',
   };
 
-export const containerStyles = {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginRight: '90px',
-}
+  export const containerStyles = {
+    position: 'fixed',
+    bottom: '40px',
+    right: '40px',
+    zIndex: 9999,
+  };
 
 export const cardContainerStyles = {
   marginBottom: '20px',

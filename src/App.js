@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import Navbar from './Components/Navbar/Navbar';
 import Footer from './Components/Footer/Footer';
+import { Player } from '@lottiefiles/react-lottie-player';
 
 // scroll to top component
 import ScrollToTop from './utils/ScrollToTop';
@@ -21,8 +22,11 @@ import {
 } from './Screens';
 import { useDispatch } from 'react-redux';
 import { auth } from './Firebase';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
+import { containerStyles } from '../src/Screens/FilterProductsScreen/FilterProductsScreen.styles';
+import SearchModal from '../src/Components/SearchModal/SearchModal';
+import { Fab, Zoom } from '@mui/material';
 
 const App = () => {
 
@@ -47,9 +51,38 @@ const App = () => {
     return () => unsubscribe();
   }, [dispatch]);
 
+  const surl = 'https://assets5.lottiefiles.com/packages/lf20_4EjgStPG5C.json';
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+
   return (
+    <>
     <Router>
       <ScrollToTop />
+      <Zoom 
+        in={true}
+        timeout={{enter: 500, exit:500}}
+        unmountOnExit
+      >
+      <div style={containerStyles}>
+        <Fab
+          size="large"
+          sx={{
+            backgroundColor: '#eddd5e',
+            width: '80px',
+            height: '80px',
+          }}
+          aria-label="search"
+          onClick={handleOpen}
+        >
+          <Player autoplay loop src={surl} />
+        </Fab>
+          <SearchModal open={open} handleClose={handleClose} />
+        
+        </div>
+      </Zoom>
       <Switch>
         <Route exact path="/login">
           <LoginScreen />
@@ -97,6 +130,7 @@ const App = () => {
         </>
       </Switch>
     </Router>
+    </>
   );
 };
 
