@@ -1,0 +1,71 @@
+{
+  "name": "ez-rental",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/core": "^11.0.0",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@lottiefiles/react-lottie-player": "^3.5.3",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.0",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "axios": "^0.21.1",
+    "bootstrap": "^5.2.2",
+    "emailjs-com": "^3.2.0",
+    "eslint-config-react-app": "^7.0.1",
+    "firebase": "^9.21.0",
+    "fuse.js": "^6.6.2",
+    "prop-types": "^15.8.1",
+    "rc-banner-anim": "^2.4.5",
+    "rc-queue-anim": "^1.8.5",
+    "rc-tween-one": "^2.7.3",
+    "react": "^17.0.2",
+    "react-bootstrap-icons": "^1.10.3",
+    "react-dom": "^17.0.2",
+    "react-icons": "^4.2.0",
+    "react-lazy-load-image-component": "^1.5.1",
+    "react-loading-skeleton": "^2.2.0",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^5.0.1",
+    "react-slick": "^0.28.1",
+    "react-toastify": "^9.0.1",
+    "redux": "^4.1.0",
+    "redux-persist": "^6.0.0",
+    "redux-thunk": "^2.3.0",
+    "saas": "^1.0.0",
+    "slick-carousel": "^1.8.1",
+    "web-vitals": "^1.1.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "scss": "sass --whatch scss -o css"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "sass": "^1.62.1"
+  }
+}

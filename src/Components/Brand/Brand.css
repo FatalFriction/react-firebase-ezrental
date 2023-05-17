@@ -1,0 +1,24 @@
+.slick-slide {
+  outline: none;
+}
+
+.slick-slide:focus {
+  outline: none;
+}
+
+.slick-img {
+  display: block;
+  aspect-ratio: 4/7;
+  object-fit: contain;
+  mix-blend-mode: color-burn;
+  margin: 0 auto;
+  width: 40%;
+}
+
+.slider-container {
+  overflow: hidden;
+}
+
+.brand {
+  border-bottom: 1px solid var(--border-color2);
+}
