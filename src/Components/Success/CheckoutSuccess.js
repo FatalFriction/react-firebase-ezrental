@@ -1,18 +1,38 @@
 /** @jsxImportSource @emotion/react */
 
-import { useState } from 'react';
+import { React } from 'react';
+import { Player } from '@lottiefiles/react-lottie-player';
 import { useHistory } from 'react-router-dom';
-import { toast } from 'react-toastify';
-
+import './Success.styles.css';
+import { Button } from '@mui/material';
 
 const CheckoutSuccess = () => {
-  
   const history = useHistory();
+  const url = 'https://assets10.lottiefiles.com/packages/lf20_m3ixidnq.json';
 
   return (
-    <div>
-      hello
-        
+    <div className="card">
+      <Player
+        autoplay
+        loop
+        src={url}
+        alt="checkmarks"
+        style={{
+          width: '250px',
+          height: '250px',
+        }}
+      />
+      <h1 className='head'>You're booked!</h1>
+      <p className='para'>We've Got Your Rental request<br /> Find all your booked services in My Bookings.</p>
+      <Button
+        size="large"
+        variant="contained"
+        style={{ backgroundColor: '#6a0dad', color: '#ffffff', 
+                 borderRadius: '20px', width: '80%'}}
+        onClick={() => history.push('/')}
+      >
+        Done
+      </Button>
     </div>
   );
 };

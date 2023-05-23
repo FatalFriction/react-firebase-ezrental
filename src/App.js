@@ -53,10 +53,18 @@ const App = () => {
   }, [dispatch]);
 
   const surl = 'https://assets5.lottiefiles.com/packages/lf20_4EjgStPG5C.json';
+  const ssurl = 'https://assets9.lottiefiles.com/datafiles/2FbN5zpKi16aTHW/data.json';
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const handleFabClick = () => {
+    if (open) {
+      handleClose();
+    } else {
+      handleOpen();
+    }
+  };
 
   return (
     <>
@@ -76,12 +84,11 @@ const App = () => {
             height: '80px',
           }}
           aria-label="search"
-          onClick={handleOpen}
+          onClick={handleFabClick}
         >
-          <Player autoplay loop src={surl} />
+          {open ? <Player autoplay loop src={ssurl}/> : <Player autoplay loop src={surl} />}
         </Fab>
           <SearchModal open={open} handleClose={handleClose} />
-        
         </div>
       </Zoom>
       <Switch>

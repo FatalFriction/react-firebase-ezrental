@@ -8,10 +8,6 @@ export const cardStyles = css`
   margin: 0 auto;
   padding: 0 !important;
 
-  .btnCart {
-    background: var(--green-color);
-  }
-
   .cartIconStyles {
     color: rgba(225, 225, 225, 0.9);
   }

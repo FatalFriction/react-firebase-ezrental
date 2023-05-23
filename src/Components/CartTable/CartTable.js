@@ -61,7 +61,7 @@ const CartTable = () => {
   
       dispatch(resetCart());
   
-      history.push('/');
+      history.push('/checkout/success');
     } catch (error) {
       console.error('Error adding transaction:', error);
       toast.error('An error occurred while processing your transaction.');

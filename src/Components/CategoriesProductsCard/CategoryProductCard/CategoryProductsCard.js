@@ -96,8 +96,6 @@ const CategoryProductsCard = ({ products }) => {
         <AddToCartButton
           onClickHandler={onClickHandler}
           isActive={isActive}
-          className="btnCart"
-          cartIconStyles="cartIconStyles"
           disabled={isOutOfStock}
         />
 

@@ -1,0 +1,24 @@
+
+  .head {
+    color: #0e0f0cd0;
+    font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+    font-weight: 900;
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+  
+  .para {
+    color: #181a1bd7;
+    font-size: 20px;
+    margin: 4em;
+  }
+  
+  .card {
+    background: white;
+    padding: 60px;
+    border-radius: 4px;
+    box-shadow: 0 2px 3px #C8D0D8;
+    text-align: center;
+    display: inline-block;
+    margin: 0 auto;
+  }

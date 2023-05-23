@@ -10,8 +10,9 @@ import Box from '../../Components/Box/Box';
 import Products from '../../Components/Products/Products';
 import Modal from '../../Components/Modal/Modal';
 
-import { containerStyles } from './HomeScreen.styles';
 import Categories from '../../Components/CategoryCart/Categories';
+
+import { containerStyles } from './HomeScreen.styles';
 
 
 const HomeScreen = () => {

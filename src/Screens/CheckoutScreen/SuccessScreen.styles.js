@@ -4,4 +4,5 @@ export const sectionStyles = css`
   display: flex;
   justify-content: center;
   margin-top: 2rem;
+  margin-bottom: 2rem;
 `;
