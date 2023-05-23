@@ -19,6 +19,7 @@ import {
   FilterProductsScreen,
   ServicesScreen,
   ContactScreen,
+  SuccessScreen,
 } from './Screens';
 import { useDispatch } from 'react-redux';
 import { auth } from './Firebase';
@@ -108,22 +109,32 @@ const App = () => {
           <Navbar />
           <Route exact path="/">
             <HomeScreen />
+            <ToastContainer />
           </Route>
 
           <Route path="/our-products">
             <FilterProductsScreen />
+            <ToastContainer />
           </Route>
 
           <Route exact path="/cart">
             <CartScreen />
+            <ToastContainer />
+          </Route>
+
+          <Route exact path="/checkout/success">
+            <SuccessScreen />
+            <ToastContainer />
           </Route>
 
           <Route exact path="/products/:productsCategory">
             <ProductsScreen />
+            <ToastContainer />
           </Route>
 
           <Route exact path="/services">
             <ServicesScreen />
+            <ToastContainer />
           </Route>
 
           <Footer />

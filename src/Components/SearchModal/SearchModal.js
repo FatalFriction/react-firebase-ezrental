@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../../Redux/SearchProducts/products_actions';
 import { Box, Card, Grid, Modal, Paper } from '@mui/material';

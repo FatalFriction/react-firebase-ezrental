@@ -7,6 +7,7 @@ import ProductsScreen from './ProductsScreen/ProductsScreen';
 import FilterProductsScreen from './FilterProductsScreen/FilterProductsScreen';
 import ServicesScreen from './ServicesScreen/ServicesScreen';
 import ContactScreen from './ContactScreen/ContactScreen';
+import SuccessScreen from './CheckoutScreen/SuccessScreen';
 
 export {
   HomeScreen,
@@ -18,4 +19,5 @@ export {
   FilterProductsScreen,
   ServicesScreen,
   ContactScreen,
+  SuccessScreen,
 };

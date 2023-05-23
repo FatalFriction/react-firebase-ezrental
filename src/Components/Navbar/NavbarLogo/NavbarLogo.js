@@ -22,7 +22,7 @@ import {
 } from './NavbarLogo.styles';
 
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { clearCart } from '../../../Redux/cart/cart_actions';
+import { resetCart } from '../../../Redux/cart/cart_actions';
 
 const NavbarLogo = () => {
   const [user, setUser] = useState(null);
@@ -70,7 +70,7 @@ const NavbarLogo = () => {
             type: 'LOGOUT',
             payload: null,
           });
-          dispatch(clearCart());
+          dispatch(resetCart());
           console.log("logout success")
           history.push('/login');
         }

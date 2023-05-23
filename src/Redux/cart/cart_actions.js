@@ -40,8 +40,8 @@ export const updateCart = (productId, quantity) => ({
 });
 
 
-export const clearCart  = () => {
+export const resetCart  = () => {
   return {
-    type: cartTypes.CLEAR_CARTS,
+    type: cartTypes.RESET_CART,
   };
 };

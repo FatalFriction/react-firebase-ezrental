@@ -9,7 +9,6 @@ import Brand from '../../Components/Brand/Brand';
 import Box from '../../Components/Box/Box';
 import Products from '../../Components/Products/Products';
 import Modal from '../../Components/Modal/Modal';
-// import Progress from '../../Components/Progress/Progress';
 
 import { containerStyles } from './HomeScreen.styles';
 import Categories from '../../Components/CategoryCart/Categories';
@@ -30,11 +29,12 @@ const HomeScreen = () => {
           <Title title="Explore Our Products" subtitle="shop now" />
         </AppCol>
       </SectionContainer>
-
       {/* Category Card Component */}
       <SectionContainer padding="pb-3">
         <Categories />
       </SectionContainer>
+
+      
       {/* [[[[[[[[ •• End Categories Card Section •• ]]]]]]]] */}
 
       {/* [[[[[[[[ •• products Section •• ]]]]]]]] */}
