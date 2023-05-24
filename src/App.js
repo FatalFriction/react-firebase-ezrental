@@ -70,27 +70,6 @@ const App = () => {
     <>
     <Router>
       <ScrollToTop />
-      <Zoom 
-        in={true}
-        timeout={{enter: 500, exit:500}}
-        unmountOnExit
-      >
-      <div style={containerStyles}>
-        <Fab
-          size="large"
-          sx={{
-            backgroundColor: '#eddd5e',
-            width: '80px',
-            height: '80px',
-          }}
-          aria-label="search"
-          onClick={handleFabClick}
-        >
-          {open ? <Player autoplay loop src={ssurl}/> : <Player autoplay loop src={surl} />}
-        </Fab>
-          <SearchModal open={open} handleClose={handleClose} />
-        </div>
-      </Zoom>
       <Switch>
         <Route exact path="/login">
           <LoginScreen />
@@ -113,6 +92,27 @@ const App = () => {
         </Route>
         {/* this empty tag to remove Navbar component from  Forms Screens */}
         <>
+          <Zoom 
+            in={true}
+            timeout={{enter: 500, exit:500}}
+            unmountOnExit
+          >
+          <div style={containerStyles}>
+            <Fab
+              size="large"
+              sx={{
+                backgroundColor: '#eddd5e',
+                width: '80px',
+                height: '80px',
+              }}
+              aria-label="search"
+              onClick={handleFabClick}
+            >
+              {open ? <Player autoplay loop src={ssurl}/> : <Player autoplay loop src={surl} />}
+            </Fab>
+              <SearchModal open={open} handleClose={handleClose} />
+            </div>
+          </Zoom>
           <Navbar />
           <Route exact path="/">
             <HomeScreen />

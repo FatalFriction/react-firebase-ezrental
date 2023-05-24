@@ -7,11 +7,8 @@ import ModalCard from '../../Components/ProductsCard/ProductsModalrss/ModalCard'
 import { cardContainerStyles } from '../../Screens/FilterProductsScreen/FilterProductsScreen.styles';
 import { MicNoneRounded, MicOffRounded } from '@mui/icons-material';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
-
-const appId = '278783f8-cbd5-4068-a370-8bbda3f911f1';
-const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
-SpeechRecognition.applyPolyfill(SpeechlySpeechRecognition);
+import '../../SpeechlyAi/config';
+import { toast } from 'react-toastify';
 
 const SearchModal = ({ open, handleClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,60 +24,79 @@ const SearchModal = ({ open, handleClose }) => {
     dispatch(fetchProducts(searchQuery));
   };
 
-  const { transcript,browserSupportsSpeechRecognition } = useSpeechRecognition();
+  const { transcript,browserSupportsSpeechRecognition,isMicrophoneAvailable  } = useSpeechRecognition();
 
   const [listening, setListening] = useState(false);
 
-  let timeout;
   const handleMicClick = () => {
-    if (!listening) {
-      // Start listening to audio
-      SpeechRecognition.startListening();
-      setListening(true);
-    } else {
-      // Stop listening to audio
-      SpeechRecognition.stopListening();
-      setListening(false);
-    }
-    
-    // Stop listening after 3 seconds without any user voice
-    let timeout;
-    const stopListening = () => {
-      SpeechRecognition.stopListening();
-      setListening(false);
-    };
-  
-    // eslint-disable-next-line no-unused-vars
-    timeout = setTimeout(stopListening, 5000);
-  };
-  
-  // Add the following event listeners outside the component
-  SpeechRecognition.onstart = () => {
-    clearTimeout(timeout);
-  };
-  
-  SpeechRecognition.onend = () => {
-    timeout = setTimeout(() => {
-      if (listening) {
+    try {
+      if (!listening) {
+        // Start listening to audio
+        SpeechRecognition.startListening();
+        setListening(true);
+      } else {
+        // Stop listening to audio
         SpeechRecognition.stopListening();
         setListening(false);
       }
-    }, 5000);
+      
+      // Stop listening after 3 seconds without any user voice
+      
+      const stopListening = () => {
+        SpeechRecognition.stopListening();
+        setListening(false);
+      };
+    
+      // eslint-disable-next-line no-unused-vars
+      const timeout = setTimeout(() => {
+        stopListening();
+        clearTimeout(timeout);
+      }, 3000);
+
+    } catch (error) {
+      // Handle the error here, e.g. show an error message to the user
+      console.error(error);
+      
+      toast.error('Error occurred while using the microphone');
+    }
+  };  
+  
+  const requestMicrophoneAccess = async () => {
+    try {
+      await SpeechRecognition.startListening({ continuous: false });
+      // Microphone access granted
+    } catch (error) {
+      toast.error('Microphone access denied or not available');
+    }
   };
-  
-  
+
+  useEffect(() => {
+    requestMicrophoneAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (transcript !== '') {
       setSearchQuery(transcript); // Update the searchQuery state with the transcript
-      console.log('Transcript:', transcript);
+      // console.log('Transcript:', transcript);
     }
     if (!browserSupportsSpeechRecognition) {
-      console.log('Incompatible');
+      // Browser doesn't support speech recognition
+      toast.error("Your browser doesn't support this feature");
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transcript]);
 
+  useEffect(() => {
+    const isWebSocketError = sessionStorage.getItem('isWebSocketError');
+
+    if (isWebSocketError) {
+      toast.error('WebSocket connection failed');
+      sessionStorage.removeItem('isWebSocketError');
+      window.location.reload();
+    }
+  }, []);
+  
   return (
     <Modal
       open={open}
@@ -101,29 +117,47 @@ const SearchModal = ({ open, handleClose }) => {
             <div>
               <h2>
                 <Grid container spacing={2}>
-                  <Grid item xs="auto">
-                    <IconButton
-                      color="info"
-                      size="medium"
-                      aria-label="onoff"
-                      onClick={handleMicClick}
-                    >
-                      {listening ? <MicOffRounded fontSize="large" /> : <MicNoneRounded fontSize="large" />}
-                    </IconButton>
-                  </Grid>
-                  <Grid item xs={11.5}>
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      style={{
-                        ...searchInputStyle,
-                        textAlign: 'center',
-                        border: 'none',
-                      }}
-                      placeholder={'Search Your Costume on Ez Rental'}
-                    />
-                  </Grid>
+                <Grid item xs="auto">
+            <IconButton
+              color="info"
+              size="medium"
+              aria-label="onoff"
+              onClick={handleMicClick}
+            >
+              {listening ? <MicOffRounded fontSize="large" /> : <MicNoneRounded fontSize="large" />}
+            </IconButton>
+          </Grid>
+          <Grid item xs={11.5}>
+            {isMicrophoneAvailable && browserSupportsSpeechRecognition ? (
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  ...searchInputStyle,
+                  textAlign: 'center',
+                  border: 'none',
+                }}
+                placeholder={'Search Your Costume on Ez Rental'}
+              />
+            ) : (
+              <>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  ...searchInputStyle,
+                  textAlign: 'center',
+                  border: 'none',
+                }}
+                placeholder={'Search Your Costume on Ez Rental'}
+              />
+              {toast.error('Microphone not available or consent not given.')}
+              </>
+            )
+            }
+          </Grid>
                 </Grid>
               </h2>
             </div>

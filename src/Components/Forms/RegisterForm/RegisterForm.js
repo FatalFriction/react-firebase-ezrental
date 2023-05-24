@@ -1,157 +1,158 @@
-/** @jsxImportSource @emotion/react */
-
-import { useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { AiOutlineLoading } from 'react-icons/ai';
-import { toast } from 'react-toastify';
-
-import Button from '../../Buttons/Button/Button';
-import Input from '../Input/Input';
+import "./new.scss";
+import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
+import { useEffect, useState } from "react";
+import {
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
+import { auth, db, storage } from "../../../Firebase/index";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { useHistory } from 'react-router-dom';
 
 import logoImg from '../../../Assets/images/logo.png';
+import { Card, CardHeader } from "@mui/material";
 
-import { auth } from '../../../Firebase';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-
-import {
-  formStyles,
-  headerStyles,
-  loadingStyle,
-  logoStyles,
-  registerLinkStyles,
-  textStyles,
-  titleStyles,
-  forgotPassowrdStyles,
-} from './Styles';
-
-const RegisterForm = () => {
-  const [userEmail, setUserEmail] = useState('');
-  const [userName, setUserName] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+const RegisterForm = ({ inputs, title }) => {
+  const [file, setFile] = useState("");
+  const [data, setData] = useState({});
+  const [per, setPerc] = useState(null);
   const history = useHistory();
 
   useEffect(() => {
-    // save user email in local storage
-    const email = window.localStorage.getItem('emailForRegistration');
-    const password = window.localStorage.getItem('passwordForRegistration');
-    const name = window.localStorage.getItem('nameForRegistration');
-  
-    if (email && password && name) {
-      setUserEmail(email);
-      setUserPassword(password);
-      setUserName(name);
-      }
-    }, []);
+    const uploadFile = () => {
+      const name = new Date().getTime() + file.name;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+      console.log(name);
+      const storageRef = ref(storage, file.name);
+      const uploadTask = uploadBytesResumable(storageRef, file);
 
-    if (!userName || !userEmail || !userPassword) {
-      toast.error('Name & Email & Password are required');
-      setIsLoading(false);
-      return;
-    }
-
-    await createUserWithEmailAndPassword(auth, userEmail, userPassword)
-    .then(() => {
-      // Signed in 
-      updateProfile(auth.currentUser, {
-        displayName: userName,
-      })
-      toast.success(
-        `Successfully registered!`
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          setPerc(progress);
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+            default:
+              break;
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setData((prev) => ({ ...prev, img: downloadURL }));
+          });
+        }
       );
-      setIsLoading(false);
-      // clear local storage
-      window.localStorage.removeItem('emailForRegistration');
-      window.localStorage.removeItem('nameForRegistration');
-      window.localStorage.removeItem('passwordForRegistration');
-      setUserEmail('');
-      setUserPassword('');
-      setUserName('');
+    };
+    file && uploadFile();
+  }, [file]);
 
-      history.push('/login'); // redirect after successful registration
-      
-    }).catch((err) => {
-        setIsLoading(false);
-        toast.error(err.message);
+  console.log(data);
+
+  const handleInput = (e) => {
+    const id = e.target.id;
+    const value = e.target.value;
+
+    setData({ ...data, [id]: value });
+  };
+
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+      await setDoc(doc(db, "users", res.user.uid), {
+        ...data,
+        timeStamp: serverTimestamp(),
       });
+      history.push('/');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} css={formStyles}>
-      <div css={headerStyles}>
-        <img
-          css={logoStyles}
-          src={logoImg}
-          alt="logo"
-          onClick={() => history.push('/')}
-        />
-        <h3 css={titleStyles}>Register</h3>
-        <p css={textStyles}>Create a Ez Rental account</p>
+    <Card sx={{ maxWidth: 1300, maxHeight: 1200}}>
+      <CardHeader 
+          avatar={
+            <img
+              className="images"
+              src={logoImg}
+              alt="logo"
+              style={{
+                width: '150px',  // Adjust the width as needed
+                height: 'auto'  // Maintain the aspect ratio by setting height to 'auto'
+              }}
+            />
+        }
+        title={title}
+        subheader="Start Your Rental Freedom"
+      />
+    <div className="new">
+      <div className="newContainer">
+        <div className="bottom">
+          <div className="left">
+            <img
+              src={
+                file
+                  ? URL.createObjectURL(file)
+                  : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
+              }
+              alt=""
+            />
+          </div>
+          <div className="right">
+            <form onSubmit={handleAdd}>
+              <div className="formInput">
+                <label htmlFor="file">
+                  Image: <DriveFolderUploadOutlinedIcon className="icon" />
+                </label>
+                <input
+                  type="file"
+                  id="file"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  style={{ opacity: 0 }}
+                  required
+                  accept="image/*"
+                />
+              </div>
+
+              {inputs.map((input) => (
+                <div className="formInput" key={input.id}>
+                  <label>{input.label}</label>
+                  <input
+                    id={input.id}
+                    type={input.type}
+                    placeholder={input.placeholder}
+                    onChange={handleInput}
+                    required
+                  />
+                </div>
+              ))}
+              <button disabled={per !== null && per < 100} type="submit">
+                Send
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
-      {/*
-      <Button width styles={googleBtnStyles}>
-        <span>
-          <FcGoogle size={15} /> <span>Sign In With Google</span>
-        </span>
-      </Button>
-
-      <header css={lineStyles}>
-        <div>Text between Lines</div>
-      </header> */}
-
-      <Input
-        inputID="name"
-        type="text"
-        placeholder="Enter your Name"
-        label="Name"
-        errorMessage="you must enter your name"
-        value={userName}
-        onChange={(e) => setUserName(e.target.value)}
-      />
-
-      <Input
-        inputID="email"
-        type="email"
-        placeholder="Enter your Email"
-        label="Your Email"
-        errorMessage="you must enter an email"
-        value={userEmail}
-        onChange={(e) => setUserEmail(e.target.value)}
-      />
-
-<Input
-        inputID="password"
-        type="password"
-        placeholder="Enter your password"
-        label="Your password"
-        errorMessage="you must enter an password"
-        value={userPassword}
-        onChange={(e) => setUserPassword(e.target.value)}
-      />
-
-      {!isLoading && <Button width>Register</Button>}
-
-      {isLoading && (
-        <Button width>
-          <span>
-            <AiOutlineLoading size={15} css={loadingStyle} />
-          </span>
-        </Button>
-      )}
-
-      <br />
-
-      <div css={registerLinkStyles}>
-        <span>Already have an Account?</span>
-        <Link to="/login" css={forgotPassowrdStyles}>
-          Login
-        </Link>
-      </div>
-    </form>
+    </div>
+    </Card>
   );
 };
 

@@ -14,10 +14,31 @@ import styles from './CartTable.module.css';
 import { useHistory } from 'react-router-dom';
 
 import Calendar from '../../GCalendar/Calendar';
-import { Button } from '@mui/material';
+import { Button, FormControl, Input, InputLabel, MenuItem, Select } from '@mui/material';
 import moment from 'moment/moment';
 import { toast } from 'react-toastify';
 import { Send } from '@mui/icons-material';
+
+const Cartshipment = ({ id, handleShipmentMethodChange }) => {
+  const [shipmentMethod, setShipmentMethod] = useState('');
+
+  const handleChange  = (e) => {
+    setShipmentMethod(e.target.value);
+    handleShipmentMethodChange(id, e.target.value);
+  };
+  
+  return (
+      <FormControl className={styles.shipmentMethodSelect} variant="standard" sx={{ minWidth: 200 }}>
+      <InputLabel id={`select-label-${id}`}>Shipment Method</InputLabel>
+        <Select required value={shipmentMethod} onChange={handleChange} labelId={`select-label-${id}`}>
+          <MenuItem value="JNE">JNE</MenuItem>
+          <MenuItem value="JNT">JNT</MenuItem>
+          <MenuItem value="GrabSend">GrabSend</MenuItem>
+          <MenuItem value="GoSend">GoSend</MenuItem>
+        </Select>
+      </FormControl>
+  );
+};
 
 const CartTable = () => {
   const { Carts } = useSelector((state) => state.cart);
@@ -27,6 +48,9 @@ const CartTable = () => {
   const url = 'https://assets9.lottiefiles.com/private_files/lf30_e3pteeho.json';
 
   const [selectedDates, setSelectedDates] = useState({});
+  const [address, setAddress] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [selectedMethods, setSelectedMethods] = useState({});
 
   const handleCheckout = async () => {
     try {
@@ -40,21 +64,46 @@ const CartTable = () => {
             ...Carts[id],
             startDate: startDateObj ? Timestamp.fromDate(startDateObj) : null,
             endDate: endDateObj ? Timestamp.fromDate(endDateObj) : null,
+            UsershipmentMethod: selectedMethods[id],
+            
           };
         }),
         totalCart: calculateTotalCart(Carts),
         orderCreated: serverTimestamp(),
-        userID: auth.currentUser.uid,
+        userName: auth.currentUser.displayName,
+        userPhotoURL: auth.currentUser.photoURL,
+        useremail: auth.currentUser.email,
+        userAddress: address,
+        userPhonenumber: phoneNumber,
       };
   
       // Perform validation
-      const { carts } = transactionData;
-      if (carts.some((cart) => !cart.startDate || !cart.endDate)) {
-        toast.error('Please select start and end dates for all cart items.');
-        return;
-      }
-  
-      console.log('Transaction Data:', transactionData);
+      const { carts,userAddress, userPhonenumber } = transactionData;
+        
+            // Check if start and end dates are selected for all cart items
+            if (carts.some((cart) => !cart.startDate || !cart.endDate)) {
+              toast.error('Please select start and end dates for all cart items.');
+              return;
+            }
+        
+            // Check if user name, address, phone number, and shipment method are provided
+            if (!userAddress || !userPhonenumber) {
+              toast.error('Please provide your address, and phone number.');
+              return;
+            }
+
+            // Check if the phone number is valid
+            const phoneNumberRegex = /^[0-9]{10,}$/; // Modify the regex pattern as per your phone number requirements
+            if (!phoneNumberRegex.test(userPhonenumber)) {
+              toast.error('Please enter a valid phone number.');
+              return;
+            }
+      
+            // Check if shipment method is selected for all cart items
+            if (Object.values(selectedMethods).some((method) => !['JNE', 'JNT', 'GrabSend', 'GoSend'].includes(method))) {
+              toast.error('Please select a valid shipment method for all cart items.');
+              return;
+            }     
   
       const docRef = await addDoc(collection(db, 'order'), transactionData);
       console.log('Transaction added with ID:', docRef.id);
@@ -66,8 +115,7 @@ const CartTable = () => {
       console.error('Error adding transaction:', error);
       toast.error('An error occurred while processing your transaction.');
     }
-  };
-  
+  };  
     
   const calculateTotalCart = (cartItems) => {
     let total = 0;
@@ -77,7 +125,6 @@ const CartTable = () => {
     });
     return total;
   };
-
 
   const handleDateChange = async (itemId, date) => {
     if (typeof date === 'string') {
@@ -112,6 +159,20 @@ const CartTable = () => {
     }
   };  
 
+  const handleShipmentMethodChange = (itemId, method) => {
+    setSelectedMethods((prevShipmentMethods) => ({
+      ...prevShipmentMethods,
+      [itemId]: method,
+    }));
+  };
+
+  const validateShipmentMethods = (carts, shipmentMethods) => {
+    return carts.some((cart) => {
+      const selectedMethod = shipmentMethods[cart.id];
+      return !selectedMethod || !['JNE', 'JNT', 'GrabSend', 'GoSend'].includes(selectedMethod);
+    });
+  };
+  
   return (
     <section className="py-5">
       {Object.keys(Carts).length !== 0 && (
@@ -122,10 +183,10 @@ const CartTable = () => {
         </div>
       )}
       {Object.keys(Carts).length !== 0 && (
-        <div className="container">
+        <div className="container" key="cart-table-container">
           <table className={styles.tableStyles}>
             <thead>
-              <tr>
+              <tr key="table-header">
                 <th className={styles.thStyles}>Product</th>
                 <th className={styles.thStyles}>Date</th>
                 <th className={styles.thStyles}>Quantity</th>
@@ -150,6 +211,7 @@ const CartTable = () => {
                         <div>
                           <p>{item.name}</p>
                           <h6>Size: {item.size}</h6>
+                          <h6>Status: {item.availability}</h6>
                           <small>Price: {formatPrice(item.price)}</small>
                           <br />
                           <span onClick={() => dispatch(deleteCart(id))}>Remove</span>
@@ -158,13 +220,17 @@ const CartTable = () => {
                     </td>
                     
                     <td className={styles.tdStyles}>
-                      <div>
+                      <span>
                       <Calendar
                         mode="range"
                         selectedDate={selectedDates[id]}
                         setSelectedDate={(date) => handleDateChange(id, date)}
                       />
-                      </div>
+                      <Cartshipment
+                        id={id}
+                        handleShipmentMethodChange={handleShipmentMethodChange}
+                      />
+                      </span>
                     </td>
 
                     <td className={styles.tdStyles}>
@@ -185,6 +251,16 @@ const CartTable = () => {
                   <td className={styles.tdStyles}>Total</td>
                   <td className={styles.tdStyles}>{formatPrice(calculateTotalCart(Carts))}</td>
                 </tr>
+                <tr>
+                  <div className={styles.addressInput}>
+                    <Input required type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                  </div>
+
+                  <div className={styles.phoneNumberInput}>
+                    <Input required type="tel" placeholder="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                  </div>
+
+                </tr>
                 <tr className={styles.btn}>
                   <td><Button variant="contained" endIcon={<Send />} onClick={handleCheckout} className={styles.checkout}>Checkout</Button></td>
                 </tr>
@@ -192,7 +268,6 @@ const CartTable = () => {
             </table>
           </div>
           
-         
         </div>
       )}
 

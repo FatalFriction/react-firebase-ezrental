@@ -1,3 +1,5 @@
+/* ... existing styles ... */
+
 .tableStyles {
   width: 100%;
   border-collapse: collapse;
@@ -21,7 +23,6 @@
   margin-left: auto;
   margin-right: -145px;
   float: right;
-  
 }
 
 @media screen and (max-width: 600px) {
@@ -105,5 +106,51 @@
     font-size: 1rem;
     margin: 0.3rem 0 0.4rem 0;
     display: inline-block;
+  }
+}
+
+/* Newly added styles */
+
+.addressInput {
+  margin-top: 20px;
+}
+
+.addressInput input {
+  width: 100%;
+  padding: 10px;
+}
+
+.phoneNumberInput {
+  margin-top: 10px;
+}
+
+.phoneNumberInput input {
+  width: 100%;
+  padding: 10px;
+}
+
+.shipmentMethodSelect {
+  margin-top: 10px;
+}
+
+.shipmentMethodSelect select {
+  width: 100%;
+  padding: 10px;
+}
+
+/* Responsive styles */
+
+@media screen and (max-width: 768px) {
+  .addressInput,
+  .phoneNumberInput,
+  .shipmentMethodSelect {
+    margin-top: 10px;
+  }
+
+  .addressInput input,
+  .phoneNumberInput input,
+  .shipmentMethodSelect select {
+    width: 100%;
+    padding: 10px;
   }
 }

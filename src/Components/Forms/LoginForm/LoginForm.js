@@ -12,8 +12,8 @@ import Button from '../../Buttons/Button/Button';
 import { Facebook, Google } from 'react-bootstrap-icons';
 import Input from '../Input/Input';
 
-import { auth, metaprovider, provider } from '../../../Firebase';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { auth, db, metaprovider, provider } from '../../../Firebase';
+import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 import {
   forgotPassowrdStyles,
@@ -26,8 +26,10 @@ import {
   textStyles,
   titleStyles,
 } from '../RegisterForm/Styles';
+import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 const LoginForm = () => {
+  
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,21 +37,53 @@ const LoginForm = () => {
   const dispatch = useDispatch();
   const { userAuth } = useSelector((state) => ({ ...state }));
 
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        const { email, displayName } = user;
+        const userData = {
+          userEmailAddress: email,
+          userDisplayName: displayName,
+        };
+
+        dispatch({
+          type: 'LOGGED_IN_USER',
+          payload: userData,
+        });
+
+        history.push('/');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [dispatch, history]);
+
   const handleGoogle = async () => {
     
     try {
       const result = await signInWithPopup(auth, provider);
       const { user } = result;
       const idTokenResult = await user.getIdTokenResult();
+
+      const userData = {
+        email: user.email,
+        displayName: user.displayName,
+        SignInprovider: user.providerId,
+        img: user.photoURL,
+        token: idTokenResult.token,
+        timeStamp: serverTimestamp(),
+      };
+
+      // Update Firestore with user data
+      await setDoc(doc(collection(db, 'users'), user.uid), userData);
+
       dispatch({
         type: 'LOGGED_IN_USER',
-        payload: {
-          userEmailAddress: user.email,
-          userDisplayName: user.displayName,
-          token: idTokenResult.token,
-        },
+        payload: userData,
       });
-  
+      
       history.push('/');
     } catch (error) {
       toast.error(error.message);
@@ -57,23 +91,70 @@ const LoginForm = () => {
   };
   
   const handleFacebook = async () => {
-  
     try {
       const result = await signInWithPopup(auth, metaprovider);
       const { user } = result;
       const idTokenResult = await user.getIdTokenResult();
+      console.log('token', idTokenResult);
+  
+      const userData = {
+        email: user.email,
+        displayName: user.displayName,
+        SignInprovider: user.providerId,
+        img: user.photoURL,
+        token: idTokenResult.token,
+        timeStamp: serverTimestamp(),
+      };
+  
+      // Update Firestore with user data
+      await setDoc(doc(collection(db, 'users'), user.uid), userData);
+  
       dispatch({
         type: 'LOGGED_IN_USER',
-        payload: {
-          userEmailAddress: user.email,
-          userDisplayName: user.displayName,
-          token: idTokenResult.token,
-        },
+        payload: userData,
       });
   
       history.push('/');
     } catch (error) {
-      toast.error(error.message);
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        const pendingCred = error.credential;
+  
+        try {
+          const result = await signInWithPopup(auth, provider);
+  
+          await result.user.linkWithCredential(pendingCred);
+          const { user } = result;
+          const idTokenResult = await user.getIdTokenResult();
+          console.log('token', idTokenResult);
+  
+          const userData = {
+            email: user.email,
+            displayName: user.displayName,
+            SignInprovider: user.providerId,
+            img: user.photoURL,
+            token: idTokenResult.token,
+            timeStamp: serverTimestamp(),
+          };
+  
+          // Update Firestore with user data
+          await setDoc(doc(collection(db, 'users'), user.uid), userData);
+  
+          dispatch({
+            type: 'LOGGED_IN_USER',
+            payload: userData,
+          });
+  
+          history.push('/');
+        } catch (error) {
+          // Handle the linking error
+          toast.error(error.message);
+          history.push('/login');
+        }
+      } else {
+        // Handle other errors
+        toast.error(error.message);
+        history.push('/login');
+      }
     }
   };
 
@@ -98,12 +179,22 @@ const LoginForm = () => {
 
       const idTokenResult = await user.getIdTokenResult();
 
+      const userData = {
+        email: user.email,
+        displayName: user.displayName,
+        SignInprovider: user.providerId,
+        img: user.photoURL,
+        token: idTokenResult.token,
+        timeStamp: serverTimestamp(),
+      };
+
+      // Update Firestore with user data
+      await setDoc(doc(collection(db, 'users'), user.uid), userData);
+
       dispatch({
         type: 'LOGGED_IN_USER',
         payload: {
-          userEmailAddress: user.email,
-          userDisplayName: user.displayName,
-          token: idTokenResult.token,
+          userData
         },
       });
 

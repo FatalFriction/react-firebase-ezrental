@@ -27,6 +27,7 @@ function cartReducer(state = initialState, action) {
           quantity: 1,
           name: action.payload.title,
           image: action.payload.img,
+          availability: action.payload.availability,
           price: +action.payload.price,
           size: action.payload.size,
         };
