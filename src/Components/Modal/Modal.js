@@ -8,10 +8,9 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import './styles.css';
 
-// why I used class component here!
-// because I use Ant Motion in this component to animate Image Gallery
-// and in the documentation they use class component
-// so it will take a lot of time to convert class component to function component
+  // because I use Ant Motion in this component to animate Image Gallery
+  // and in the documentation they use class component
+  // so it will take a lot of time to convert class component to function component
 
 class Modal extends Component {
   static propTypes = {

@@ -43,9 +43,20 @@ export const contactStyles = css`
 `;
 
 export const navLogo = css`
+  width: 100%;
+  height: 100%;
+  max-width: 150px;
+  max-height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 0 auto;
-  cursor: pointer;
-
+  
+  @media (max-width: 768px) {
+    max-width: 100px;
+    max-height: 100px;
+  }
+  
   img {
     display: block;
     width: 150px;

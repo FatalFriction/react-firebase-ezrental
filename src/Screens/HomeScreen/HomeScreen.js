@@ -35,7 +35,6 @@ const HomeScreen = () => {
         <Categories />
       </SectionContainer>
 
-      
       {/* [[[[[[[[ •• End Categories Card Section •• ]]]]]]]] */}
 
       {/* [[[[[[[[ •• products Section •• ]]]]]]]] */}

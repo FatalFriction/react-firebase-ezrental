@@ -6,4 +6,5 @@ export const cartTypes = {
   UPDATE_CART: 'UPDATE_CART',
   DELETE_CART: 'DELETE_CART',
   RESET_CART: 'RESET_CART',
+  SET_DOC_REF: 'SET_DOC_REF',
 };

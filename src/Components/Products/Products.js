@@ -11,7 +11,10 @@ const Products = ({ sliceStart, sliceEnd }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchProducts());
+    const fetchData = async () => {
+      await dispatch(fetchProducts());
+    };
+    fetchData();
   }, [dispatch]);
 
   return (

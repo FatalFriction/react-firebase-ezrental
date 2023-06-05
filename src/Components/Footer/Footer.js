@@ -35,6 +35,7 @@ const Footer = () => {
               src={siteLogo}
               alt="logo"
               css={logoStyles}
+              style={{ backgroundColor: 'white', borderRadius: '60%'}}
               onClick={() => history.push('/')}
             />
           </div>

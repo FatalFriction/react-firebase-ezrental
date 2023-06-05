@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { deleteCart, resetCart } from '../../Redux/cart/cart_actions';
+import { deleteCart, setDocRef } from '../../Redux/cart/cart_actions';
 import { formatPrice } from '../../utils/formatPrice';
 import { Player } from '@lottiefiles/react-lottie-player';
 import IncreaseDecreaseButton from '../Buttons/IncreaseDecreaseButton/IncreaseDecreaseButton';
@@ -14,31 +14,11 @@ import styles from './CartTable.module.css';
 import { useHistory } from 'react-router-dom';
 
 import Calendar from '../../GCalendar/Calendar';
-import { Button, FormControl, Input, InputLabel, MenuItem, Select } from '@mui/material';
+import { Button, Input} from '@mui/material';
 import moment from 'moment/moment';
 import { toast } from 'react-toastify';
 import { Send } from '@mui/icons-material';
-
-const Cartshipment = ({ id, handleShipmentMethodChange }) => {
-  const [shipmentMethod, setShipmentMethod] = useState('');
-
-  const handleChange  = (e) => {
-    setShipmentMethod(e.target.value);
-    handleShipmentMethodChange(id, e.target.value);
-  };
-  
-  return (
-      <FormControl className={styles.shipmentMethodSelect} variant="standard" sx={{ minWidth: 200 }}>
-      <InputLabel id={`select-label-${id}`}>Shipment Method</InputLabel>
-        <Select required value={shipmentMethod} onChange={handleChange} labelId={`select-label-${id}`}>
-          <MenuItem value="JNE">JNE</MenuItem>
-          <MenuItem value="JNT">JNT</MenuItem>
-          <MenuItem value="GrabSend">GrabSend</MenuItem>
-          <MenuItem value="GoSend">GoSend</MenuItem>
-        </Select>
-      </FormControl>
-  );
-};
+import Shipper from '../../Shipper/Shipper';
 
 const CartTable = () => {
   const { Carts } = useSelector((state) => state.cart);
@@ -48,37 +28,53 @@ const CartTable = () => {
   const url = 'https://assets9.lottiefiles.com/private_files/lf30_e3pteeho.json';
 
   const [selectedDates, setSelectedDates] = useState({});
-  const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [selectedMethods, setSelectedMethods] = useState({});
 
+  const [selectedData, setSelectedData] = useState(null);
+
+  const handleUserPick = (obj) => {
+    setSelectedData(obj);
+  };
+  
   const handleCheckout = async () => {
+
+    if (selectedData === null) {
+      toast.error('Please input your address before proceeding to checkout.');
+      return;
+    }
+
     try {
       const transactionData = {
         carts: Object.keys(Carts).map((id) => {
           const { startDate, endDate } = selectedDates[id] || {};
           const startDateObj = startDate ? new Date(startDate) : null;
           const endDateObj = endDate ? new Date(endDate) : null;
-  
+          
+          const numdays = startDate && endDate ? moment.duration(moment(endDate).diff(moment(startDate))).asDays() : 0;
+          
+          const item = Carts[id]; // Retrieve the item object from Carts
+
+          const subtotal = (item.price * item.quantity) * numdays; // Calculate the subtotal
+
           return {
             ...Carts[id],
             startDate: startDateObj ? Timestamp.fromDate(startDateObj) : null,
             endDate: endDateObj ? Timestamp.fromDate(endDateObj) : null,
-            UsershipmentMethod: selectedMethods[id],
-            
+            subtotal: subtotal,
           };
         }),
         totalCart: calculateTotalCart(Carts),
-        orderCreated: serverTimestamp(),
+        timeStamp: serverTimestamp(),
         userName: auth.currentUser.displayName,
         userPhotoURL: auth.currentUser.photoURL,
         useremail: auth.currentUser.email,
-        userAddress: address,
+        userid: auth.currentUser.uid,
         userPhonenumber: phoneNumber,
+        deliverycost: selectedData.total_price,
       };
   
       // Perform validation
-      const { carts,userAddress, userPhonenumber } = transactionData;
+      const { carts, userPhonenumber } = transactionData;
         
             // Check if start and end dates are selected for all cart items
             if (carts.some((cart) => !cart.startDate || !cart.endDate)) {
@@ -87,7 +83,7 @@ const CartTable = () => {
             }
         
             // Check if user name, address, phone number, and shipment method are provided
-            if (!userAddress || !userPhonenumber) {
+            if (!userPhonenumber) {
               toast.error('Please provide your address, and phone number.');
               return;
             }
@@ -98,44 +94,58 @@ const CartTable = () => {
               toast.error('Please enter a valid phone number.');
               return;
             }
-      
-            // Check if shipment method is selected for all cart items
-            if (Object.values(selectedMethods).some((method) => !['JNE', 'JNT', 'GrabSend', 'GoSend'].includes(method))) {
-              toast.error('Please select a valid shipment method for all cart items.');
-              return;
-            }     
+        
   
       const docRef = await addDoc(collection(db, 'order'), transactionData);
-      console.log('Transaction added with ID:', docRef.id);
-  
-      dispatch(resetCart());
+      dispatch(setDocRef(docRef.id)); // Dispatch the action to store the docRef in Redux
   
       history.push('/checkout/success');
     } catch (error) {
       console.error('Error adding transaction:', error);
       toast.error('An error occurred while processing your transaction.');
     }
-  };  
-    
+  };
+
+
   const calculateTotalCart = (cartItems) => {
     let total = 0;
+    
     Object.keys(cartItems).forEach((id) => {
       const { price, quantity } = cartItems[id];
-      total += price * quantity;
+      const { numdays } = selectedDates[id] || {}; // Get the number of days for the item
+      
+      const subtotal = numdays ? numdays * price * quantity : price * quantity; // Calculate the subtotal
+
+      total += subtotal;
     });
-    return total;
+    if(selectedData)
+    {
+      return total + selectedData?.total_price;
+    }
+    else {
+      return total;
+    }
   };
+  
 
   const handleDateChange = async (itemId, date) => {
     if (typeof date === 'string') {
       const [startDateStr, endDateStr] = date.split('to').map((str) => str.trim());
-  
+      
       let startDate = null;
       let endDate = null;
-  
+      let numdays = null;
+
       if (startDateStr && endDateStr && startDateStr !== endDateStr) {
         startDate = moment(startDateStr, 'MM-DD-YYYY').format('YYYY-MM-DD');
         endDate = moment(endDateStr, 'MM-DD-YYYY').format('YYYY-MM-DD');
+
+          if (startDate && endDate) {
+            const startMoment = moment(startDate);
+            const endMoment = moment(endDate);
+            const duration = moment.duration(endMoment.diff(startMoment));
+           numdays = duration.asDays();
+          }
       }
   
       setSelectedDates((prevSelectedDates) => ({
@@ -143,36 +153,35 @@ const CartTable = () => {
         [itemId]: {
           startDate,
           endDate,
+          numdays,
         },
       }));
     } else if (typeof date === 'object' && date.startDate && date.endDate) {
+      const startDate = moment(date.startDate).format('YYYY-MM-DD');
+      const endDate = moment(date.endDate).format('YYYY-MM-DD');
+
+      const startMoment = moment(startDate);
+      const endMoment = moment(endDate);
+      const duration = moment.duration(endMoment.diff(startMoment));
+      const numdays = duration.asDays();
+      
       setSelectedDates((prevSelectedDates) => ({
         ...prevSelectedDates,
         [itemId]: {
           startDate: moment(date.startDate).format('YYYY-MM-DD'),
           endDate: moment(date.endDate).format('YYYY-MM-DD'),
+          numdays: numdays,
         },
       }));
     } else {
       // Handle invalid date format
       console.error('Invalid date format:', date);
     }
+
   };  
 
-  const handleShipmentMethodChange = (itemId, method) => {
-    setSelectedMethods((prevShipmentMethods) => ({
-      ...prevShipmentMethods,
-      [itemId]: method,
-    }));
-  };
+  const total = calculateTotalCart(Carts); // Calculate the total value
 
-  const validateShipmentMethods = (carts, shipmentMethods) => {
-    return carts.some((cart) => {
-      const selectedMethod = shipmentMethods[cart.id];
-      return !selectedMethod || !['JNE', 'JNT', 'GrabSend', 'GoSend'].includes(selectedMethod);
-    });
-  };
-  
   return (
     <section className="py-5">
       {Object.keys(Carts).length !== 0 && (
@@ -222,13 +231,10 @@ const CartTable = () => {
                     <td className={styles.tdStyles}>
                       <span>
                       <Calendar
+                        className={styles.calendar}
                         mode="range"
                         selectedDate={selectedDates[id]}
                         setSelectedDate={(date) => handleDateChange(id, date)}
-                      />
-                      <Cartshipment
-                        id={id}
-                        handleShipmentMethodChange={handleShipmentMethodChange}
                       />
                       </span>
                     </td>
@@ -236,8 +242,7 @@ const CartTable = () => {
                     <td className={styles.tdStyles}>
                       <IncreaseDecreaseButton qty={item.quantity} itemKey={id} />
                     </td>
-
-                    <td className={styles.tdStyles}>{formatPrice(item.price * item.quantity)}</td>
+                    <td className={styles.tdStyles}>{formatPrice((item.price * item.quantity) * (selectedDates[id]?.numdays || 1))}</td>
                   </tr>
                 );
               })}
@@ -248,21 +253,26 @@ const CartTable = () => {
             <table className={styles.totalPriceTable}>
               <tfoot>
                 <tr>
+                  <td className={styles.tdStyles}>Delivery Cost</td>
+                  <td className={styles.tdStyles}>{selectedData ? formatPrice(selectedData.total_price) : "Not available"}</td>
+                </tr>
+                  <br/>
+                <tr>
                   <td className={styles.tdStyles}>Total</td>
                   <td className={styles.tdStyles}>{formatPrice(calculateTotalCart(Carts))}</td>
                 </tr>
                 <tr>
-                  <div className={styles.addressInput}>
-                    <Input required type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
-                  </div>
 
                   <div className={styles.phoneNumberInput}>
                     <Input required type="tel" placeholder="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
                   </div>
-
+                  <div className={styles.addressInput}>
+                    <Shipper onUserPick={handleUserPick} itemval={total}/>
+                  </div>
+                  
                 </tr>
                 <tr className={styles.btn}>
-                  <td><Button variant="contained" endIcon={<Send />} onClick={handleCheckout} className={styles.checkout}>Checkout</Button></td>
+                  <td><Button variant="contained" endIcon={<Send />} onClick={handleCheckout} className={styles.checkout} >Checkout</Button></td>
                 </tr>
               </tfoot>
             </table>

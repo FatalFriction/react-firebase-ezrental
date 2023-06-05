@@ -21,6 +21,7 @@ import {
   ContactScreen,
   SuccessScreen,
 } from './Screens';
+
 import { useDispatch } from 'react-redux';
 import { auth } from './Firebase';
 import { useEffect, useState } from 'react';
@@ -113,6 +114,7 @@ const App = () => {
               <SearchModal open={open} handleClose={handleClose} />
             </div>
           </Zoom>
+          
           <Navbar />
           <Route exact path="/">
             <HomeScreen />

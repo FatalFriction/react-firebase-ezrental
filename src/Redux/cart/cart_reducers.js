@@ -3,6 +3,7 @@ import { cartTypes } from './cart_types';
 const initialState = {
   numberCart: 0,
   Carts: [],
+  docRef: null,
 };
 
 function cartReducer(state = initialState, action) {
@@ -85,9 +86,16 @@ function cartReducer(state = initialState, action) {
         numberCart: 0,
         Carts: [],
       };
+    
+      case cartTypes.SET_DOC_REF:
+        return {
+          ...state,
+          docRef: action.payload,
+        };
 
-    default:
-      return state;
+      default:
+        return state;
+
   }
 }
 

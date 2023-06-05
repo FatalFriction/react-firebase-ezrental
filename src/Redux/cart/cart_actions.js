@@ -45,3 +45,11 @@ export const resetCart  = () => {
     type: cartTypes.RESET_CART,
   };
 };
+
+export const setDocRef = (payload) => {
+  return {
+    type: cartTypes.SET_DOC_REF,
+    payload,
+  };
+};
+

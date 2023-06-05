@@ -128,7 +128,7 @@ const NavbarLogo = () => {
 
             {/* Logo */}
             <div css={navLogo} onClick={() => history.push('/')}>
-              <Player autoplay loop src={url} alt="logo" />
+              <Player autoplay loop src={url} alt="logo" className='logos'/>
             </div>
             {/* Social Icons */}
             <SocialIcons styles={socialIcons} />

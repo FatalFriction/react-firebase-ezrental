@@ -1,0 +1,22 @@
+
+    @media screen and (max-width: 768px) {
+    /* Update styles for mobile devices */
+    .container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+  }
+  
+  @media screen and (max-width: 992px) {
+    .select {
+      width: 200px;
+    }
+  }
+  
+  @media screen and (max-width: 1200px) {
+    .select {
+      width: 150px;
+    }
+  }
+  

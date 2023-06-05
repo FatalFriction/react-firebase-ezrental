@@ -1,19 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Pagination from '@mui/material/Pagination';
 
-import CategoryProductsCard from '../../CategoriesProductsCard/CategoryProductCard/CategoryProductsCard'
+import CategoryProductsCard from '../../CategoriesProductsCard/CategoryProductCard/CategoryProductsCard';
 import SkeletonProducts from '../../Skeletons/SkeletonProducts';
-
-import { fetchCategoriesProducts } from '../../../Redux/filterProducts/filterProducts_actions';
 import AppCol from '../../Responsive/AppCol/AppCol';
 
-const FilterProducts = ({ selectproducts }) => {
+import { fetchCategoriesProducts } from '../../../Redux/filterProducts/filterProducts_actions';
 
+const FilterProducts = ({ selectproducts }) => {
   const {
     filterCategoriesproducts: { products },
     loading,
   } = useSelector((state) => state.filterproducts);
   const dispatch = useDispatch();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 6;
 
   useEffect(() => {
     let isMounted = true;
@@ -27,19 +30,36 @@ const FilterProducts = ({ selectproducts }) => {
     };
   }, [dispatch, selectproducts]);
 
+  // Pagination Logic
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products && products.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+  };
 
   return (
     <>
-      {!loading
-        ? products &&
-          products.map((product) => (
-            <CategoryProductsCard key={product.uid} products={product} />
-          ))
-        : [...Array(10)].map((_, index) => (
-            <AppCol key={index} cols="col-11 col-md-5 mx-auto mb-5">
-              <SkeletonProducts />
-            </AppCol>
-          ))}
+      {!loading ? (
+        currentProducts &&
+        currentProducts.map((product) => (
+          <CategoryProductsCard key={product.uid} products={product} />
+        ))
+      ) : (
+        [...Array(productsPerPage)].map((_, index) => (
+          <AppCol key={index} cols="col-11 col-md-5 mx-auto mb-5">
+            <SkeletonProducts />
+          </AppCol>
+        ))
+      )}
+
+      {/* Pagination */}
+      <Pagination
+        count={Math.ceil(products.length / productsPerPage)}
+        page={currentPage}
+        onChange={handlePageChange}
+      />
     </>
   );
 };

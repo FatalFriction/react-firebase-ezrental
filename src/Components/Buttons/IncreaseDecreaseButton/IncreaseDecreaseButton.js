@@ -15,11 +15,13 @@ import {
   qtyStyles,
 } from './IncreaseDecreaseButton.styles';
 
+import './IncreaseDecreaseButton.css'
+
 const IncreaseDecreaseButton = ({ itemKey, qty }) => {
   const dispatch = useDispatch();
 
   return (
-    <div css={qtyStyles}>
+    <div css={qtyStyles} className='container'>
       <button
         css={[btnValueStyles, decreaseBtnStyles]}
         onClick={() => dispatch(decreaseQuantity(itemKey))}

@@ -40,8 +40,7 @@ const SearchModal = ({ open, handleClose }) => {
         setListening(false);
       }
       
-      // Stop listening after 3 seconds without any user voice
-      
+      // Stop listening after 4 seconds without any user voice
       const stopListening = () => {
         SpeechRecognition.stopListening();
         setListening(false);
@@ -51,30 +50,16 @@ const SearchModal = ({ open, handleClose }) => {
       const timeout = setTimeout(() => {
         stopListening();
         clearTimeout(timeout);
-      }, 3000);
+      }, 4000);
 
     } catch (error) {
       // Handle the error here, e.g. show an error message to the user
       console.error(error);
-      
       toast.error('Error occurred while using the microphone');
     }
+    return
   };  
   
-  const requestMicrophoneAccess = async () => {
-    try {
-      await SpeechRecognition.startListening({ continuous: false });
-      // Microphone access granted
-    } catch (error) {
-      toast.error('Microphone access denied or not available');
-    }
-  };
-
-  useEffect(() => {
-    requestMicrophoneAccess();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   useEffect(() => {
     if (transcript !== '') {
       setSearchQuery(transcript); // Update the searchQuery state with the transcript
@@ -98,6 +83,7 @@ const SearchModal = ({ open, handleClose }) => {
   }, []);
   
   return (
+    <>
     <Modal
       open={open}
       onClose={handleClose}
@@ -114,7 +100,7 @@ const SearchModal = ({ open, handleClose }) => {
           }}
         >
           <Grid>
-            <div>
+            <>
               <h2>
                 <Grid container spacing={2}>
                 <Grid item xs="auto">
@@ -158,9 +144,9 @@ const SearchModal = ({ open, handleClose }) => {
             )
             }
           </Grid>
-                </Grid>
+            </Grid>
               </h2>
-            </div>
+                </>
             {/* Render the product list only if 'products' is defined */}
             {products.products && Array.isArray(products.products) && (
               <Grid
@@ -180,7 +166,7 @@ const SearchModal = ({ open, handleClose }) => {
                     key={product.uid}
                   >
                     <Card sx={cardContainerStyles}>
-                      <ModalCard products={product} />
+                      <ModalCard key ={product.uid} products={product} />
                     </Card>
                   </Grid>
                 ))}
@@ -190,6 +176,7 @@ const SearchModal = ({ open, handleClose }) => {
         </Paper>
       </Box>
     </Modal>
+    </>
   );
 };
 
