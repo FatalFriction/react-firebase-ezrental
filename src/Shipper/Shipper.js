@@ -7,7 +7,7 @@ import './Shipper.css'
 import { DataGrid } from '@mui/x-data-grid';
 import { PriceColumns } from './datatablesource';
 
-const BASE_URL = 'https://merchant-api-sandbox.shipper.id';
+const BASE_URL = 'http://vercel-cors-anywhere.vercel.app/https://merchant-api-sandbox.shipper.id';
 
 
 const style = {
