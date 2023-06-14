@@ -7,7 +7,7 @@ import './Shipper.css'
 import { DataGrid } from '@mui/x-data-grid';
 import { PriceColumns } from './datatablesource';
 
-const BASE_URL = 'https://cors-anywhere.herokuapp.com/https://merchant-api-sandbox.shipper.id';
+const BASE_URL = 'https://cors-proxy.fringe.zone/https://merchant-api-sandbox.shipper.id';
 
 
 const style = {
