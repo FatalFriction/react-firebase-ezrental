@@ -90,9 +90,9 @@ const ContactForm = () => {
       />
 
       <Input
-        inputID="email"
-        name="email"
-        type="email"
+        inputID="reply_to"
+        name="reply_to"
+        type="text"
         placeholder="Enter your Email"
         label="Email"
         errorMessage="you must enter an email"
