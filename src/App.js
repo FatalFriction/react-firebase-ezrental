@@ -36,7 +36,6 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -119,6 +118,8 @@ const App = () => {
           </Zoom>
           
           <Navbar />
+
+          <Switch>
           <Route exact path="/">
             <HomeScreen />
             <ToastContainer />
@@ -150,6 +151,8 @@ const App = () => {
           </Route>
           
           <Redirect to="/not-found" />
+          </Switch>
+
           <Route path="/not-found" component={NotFound} />
 
           <Footer />
