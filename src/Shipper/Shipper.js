@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { API_KEY } from './config';
+import { API_KEY, CORS_KEY } from './config';
 import { Box, Button, FormControl, FormHelperText, Grid,  InputLabel, MenuItem, Modal, Select, Typography } from '@mui/material';
 import './Shipper.css'
 import { DataGrid } from '@mui/x-data-grid';
@@ -61,6 +61,7 @@ const Shipper = ({onUserPick, itemval}) => {
         const response = await axios.post(`${BASE_URL}/v3/pricing/domestic/${rate_type}`, requestBody, {
           headers: {
             'X-API-Key': API_KEY,
+            'x-cors-api-key': CORS_KEY,
           },
         });
 
@@ -92,6 +93,7 @@ const Shipper = ({onUserPick, itemval}) => {
           url: `${BASE_URL}/v3/location/country/228/provinces`,
           headers: { 
             'X-API-Key': API_KEY,
+            'x-cors-api-key': CORS_KEY,
           },
         };
   
@@ -126,6 +128,7 @@ const Shipper = ({onUserPick, itemval}) => {
             url: `${BASE_URL}/v3/location/province/${selectedProvince}/cities`,
             headers: { 
               'X-API-Key': API_KEY,
+              'x-cors-api-key': CORS_KEY,
             },
           };
     
@@ -162,6 +165,7 @@ const Shipper = ({onUserPick, itemval}) => {
             url: `${BASE_URL}/v3/location/city/${selectedCities}/suburbs`,
             headers: { 
               'X-API-Key': API_KEY,
+              'x-cors-api-key': CORS_KEY,
             },
           };
     
@@ -198,6 +202,7 @@ const Shipper = ({onUserPick, itemval}) => {
             url: `${BASE_URL}/v3/location/suburb/${selectedsuburbs}/areas`,
             headers: { 
               'X-API-Key': API_KEY,
+              'x-cors-api-key': CORS_KEY,
             },
           };
     
