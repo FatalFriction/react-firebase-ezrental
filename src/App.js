@@ -29,10 +29,13 @@ import { useEffect, useState } from 'react';
 import { containerStyles } from '../src/Screens/FilterProductsScreen/FilterProductsScreen.styles';
 import SearchModal from '../src/Components/SearchModal/SearchModal';
 import { Fab, Zoom } from '@mui/material';
+import NotFound from './Components/NotFound/NotFound';
+import { Redirect } from 'react-router-dom/cjs/react-router-dom.min';
 
 const App = () => {
 
   const dispatch = useDispatch();
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -125,7 +128,7 @@ const App = () => {
             <FilterProductsScreen />
             <ToastContainer />
           </Route>
-
+          
           <Route exact path="/cart">
             <CartScreen />
             <ToastContainer />
@@ -145,8 +148,12 @@ const App = () => {
             <ServicesScreen />
             <ToastContainer />
           </Route>
+          
+          <Redirect to="/not-found" />
+          <Route path="/not-found" component={NotFound} />
 
           <Footer />
+          
         </>
       </Switch>
     </Router>
