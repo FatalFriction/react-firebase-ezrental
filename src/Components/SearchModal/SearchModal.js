@@ -40,7 +40,7 @@ const SearchModal = ({ open, handleClose }) => {
         setListening(false);
       }
       
-      // Stop listening after 4 seconds without any user voice
+      // Stop listening after 6 seconds without any user voice
       const stopListening = () => {
         SpeechRecognition.stopListening();
         setListening(false);
@@ -50,7 +50,7 @@ const SearchModal = ({ open, handleClose }) => {
       const timeout = setTimeout(() => {
         stopListening();
         clearTimeout(timeout);
-      }, 4000);
+      }, 6000);
 
     } catch (error) {
       // Handle the error here, e.g. show an error message to the user
