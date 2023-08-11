@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import { formatPrice } from '../../../utils/formatPrice';
@@ -24,13 +24,18 @@ import {
 import ModalCard from '../../ProductsCard/ProductsModalrss/ModalCard';
 import { Box, Modal } from '@mui/material';
 import { style } from '../../ProductsCard/ProductsCard.styles';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const CategoryProductsCard = ({ products }) => {
   const [isActive, setIsActive] = useState(false);
   const dispatch = useDispatch();
+  const history = useHistory(); // Initialize useHistory
 
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
+  
+  // Get user authentication status from Redux state
+  const user = useSelector(state => state.user);
 
   useEffect(() => {
     let isMounted = true;
@@ -53,6 +58,12 @@ const CategoryProductsCard = ({ products }) => {
   };
 
   const onClickHandler = () => {
+    if (!user) {
+      // Redirect to login page if user is not authenticated
+      history.push('/login');
+      return;
+    }
+
     if (products.availability === 'Out of stock') {
       return; // exit the function without dispatching the action
     }

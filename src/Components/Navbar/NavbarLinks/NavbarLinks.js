@@ -54,21 +54,28 @@ const NavbarLinks = () => {
           <ul css={navLinksStyles}>
           {/* check if the user is signed in and navLink.id === 7
           if true, don't render the link*/}
-            {navLinks.map((navLink) => (
-              ((user && (navLink.id === 7 || navLink.id === 6)) ? null : (
+          {navLinks.map((navLink) => (
+            (user && (navLink.id === 7 || navLink.id === 6)) || (!user && navLink.id === 4) ? null : (
               <li key={navLink.id}>
                 <NavLink exact activeClassName="active-link" to={navLink.path}>
                   {navLink.text}
                 </NavLink>
               </li>
-            ))
-            ))}
+            )
+          ))}
           </ul>
           {/* cart icon */}
-          <span className="cart" onClick={() => history.push('/cart')}>
-            <Player autoplay loop src={url} css={cartIconStyles}/>
-            <span className="cart-count">{cart.numberCart}</span>
-          </span>
+          {user ? (
+            <span className="cart" onClick={() => history.push('/cart')}>
+              <Player autoplay loop src={url} css={cartIconStyles}/>
+              <span className="cart-count">{cart.numberCart}</span>
+            </span>
+          ) : (
+            <span className="cart" style={{ pointerEvents: 'none' }}>
+              <Player autoplay loop src={url} css={cartIconStyles}/>
+              <span className="cart-count">{cart.numberCart}</span>
+            </span>
+          )}
         </nav>
       </div>
       <Sidebar

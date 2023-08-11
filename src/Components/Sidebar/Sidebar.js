@@ -14,7 +14,7 @@ import {
   sidebarStyles,
 } from './Sidebar.styles';
 
-const Sidebar = ({ isSidebarActive, setIsSidebarActive }) => {
+const Sidebar = ({ isSidebarActive, setIsSidebarActive, user }) => {
   return (
     <aside css={sidebarStyles({ isSidebarActive })}>
       {/* logo */}
@@ -22,16 +22,21 @@ const Sidebar = ({ isSidebarActive, setIsSidebarActive }) => {
       {/* links */}
       <ul css={listStyles}>
         {navLinks.map(({ id, text, path }) => (
-          <li key={id} onClick={() => setIsSidebarActive(false)}>
-            <NavLink
-              css={linkStyles}
-              to={path}
-              activeClassName="activeLink"
-              exact
-            >
-              {text}
-            </NavLink>
-          </li>
+          // Check if the user is authenticated and the link should be skipped
+          (user && (id === 7 || id === 6)) ||
+          // Check if the user is not authenticated and the link is id 4
+          (!user && id === 4) ? null : (
+            <li key={id} onClick={() => setIsSidebarActive(false)}>
+              <NavLink
+                css={linkStyles}
+                to={path}
+                activeClassName="activeLink"
+                exact
+              >
+                {text}
+              </NavLink>
+            </li>
+          )
         ))}
       </ul>
       {/* social icons */}
