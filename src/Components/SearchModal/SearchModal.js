@@ -5,10 +5,6 @@ import { fetchProducts } from '../../Redux/SearchProducts/products_actions';
 import { searchBoxStyle, searchInputStyle } from '../../Components/ProductsCard/ProductsCard.styles';
 import ModalCard from '../../Components/ProductsCard/ProductsModalrss/ModalCard';
 import { cardContainerStyles } from '../../Screens/FilterProductsScreen/FilterProductsScreen.styles';
-import { MicNoneRounded, MicOffRounded } from '@mui/icons-material';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import '../../SpeechlyAi/config';
-import { toast } from 'react-toastify';
 
 const SearchModal = ({ open, handleClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,71 +15,11 @@ const SearchModal = ({ open, handleClose }) => {
     dispatch(fetchProducts(searchQuery));
   }, [dispatch, searchQuery]);
 
-  // eslint-disable-next-line no-unused-vars
   const handleSearch = () => {
     dispatch(fetchProducts(searchQuery));
   };
 
-  const { transcript,browserSupportsSpeechRecognition,isMicrophoneAvailable  } = useSpeechRecognition();
-
-  const [listening, setListening] = useState(false);
-
-  const handleMicClick = () => {
-    try {
-      if (!listening) {
-        // Start listening to audio
-        SpeechRecognition.startListening();
-        setListening(true);
-      } else {
-        // Stop listening to audio
-        SpeechRecognition.stopListening();
-        setListening(false);
-      }
-      
-      // Stop listening after 6 seconds without any user voice
-      const stopListening = () => {
-        SpeechRecognition.stopListening();
-        setListening(false);
-      };
-    
-      // eslint-disable-next-line no-unused-vars
-      const timeout = setTimeout(() => {
-        stopListening();
-        clearTimeout(timeout);
-      }, 6000);
-
-    } catch (error) {
-      // Handle the error here, e.g. show an error message to the user
-      console.error(error);
-      toast.error('Error occurred while using the microphone');
-    }
-    return
-  };  
-  
-  useEffect(() => {
-    if (transcript !== '') {
-      setSearchQuery(transcript); // Update the searchQuery state with the transcript
-      // console.log('Transcript:', transcript);
-    }
-    if (!browserSupportsSpeechRecognition) {
-      // Browser doesn't support speech recognition
-      toast.error("Your browser doesn't support this feature");
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transcript]);
-
-  useEffect(() => {
-    const isWebSocketError = sessionStorage.getItem('isWebSocketError');
-
-    if (isWebSocketError) {
-      toast.error('WebSocket connection failed');
-      sessionStorage.removeItem('isWebSocketError');
-      window.location.reload();
-    }
-  }, []);
-  
   return (
-    <>
     <Modal
       open={open}
       onClose={handleClose}
@@ -100,53 +36,33 @@ const SearchModal = ({ open, handleClose }) => {
           }}
         >
           <Grid>
-            <>
-              <h2>
-                <Grid container spacing={2}>
+            <h2>
+              <Grid container spacing={2}>
                 <Grid item xs="auto">
-            <IconButton
-              color="info"
-              size="medium"
-              aria-label="onoff"
-              onClick={handleMicClick}
-            >
-              {listening ? <MicOffRounded fontSize="large" /> : <MicNoneRounded fontSize="large" />}
-            </IconButton>
-          </Grid>
-          <Grid item xs={11.5}>
-            {isMicrophoneAvailable && browserSupportsSpeechRecognition ? (
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  ...searchInputStyle,
-                  textAlign: 'center',
-                  border: 'none',
-                }}
-                placeholder={'Search Your Costume on Ez Rental'}
-              />
-            ) : (
-              <>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  ...searchInputStyle,
-                  textAlign: 'center',
-                  border: 'none',
-                }}
-                placeholder={'Search Your Costume on Ez Rental'}
-              />
-              {toast.error('Microphone not available or consent not given.')}
-              </>
-            )
-            }
-          </Grid>
-            </Grid>
-              </h2>
-                </>
+                  <IconButton
+                    color="info"
+                    size="medium"
+                    aria-label="onoff"
+                    onClick={handleSearch}
+                  >
+                    {/* Add your search icon or button here */}
+                  </IconButton>
+                </Grid>
+                <Grid item xs={11.5}>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                      ...searchInputStyle,
+                      textAlign: 'center',
+                      border: 'none',
+                    }}
+                    placeholder={'Search Your Costume on Ez Rental'}
+                  />
+                </Grid>
+              </Grid>
+            </h2>
             {/* Render the product list only if 'products' is defined */}
             {products.products && Array.isArray(products.products) && (
               <Grid
@@ -166,7 +82,7 @@ const SearchModal = ({ open, handleClose }) => {
                     key={product.uid}
                   >
                     <Card sx={cardContainerStyles}>
-                      <ModalCard key ={product.uid} products={product} />
+                      <ModalCard key={product.uid} products={product} />
                     </Card>
                   </Grid>
                 ))}
@@ -176,7 +92,6 @@ const SearchModal = ({ open, handleClose }) => {
         </Paper>
       </Box>
     </Modal>
-    </>
   );
 };
 

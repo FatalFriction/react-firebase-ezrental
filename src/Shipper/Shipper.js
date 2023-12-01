@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { API_KEY, CORS_KEY } from './config';
 import { Box, Button, FormControl, FormHelperText, Grid,  InputLabel, MenuItem, Modal, Select, Typography } from '@mui/material';
 import './Shipper.css'
 import { DataGrid } from '@mui/x-data-grid';
 import { PriceColumns } from './datatablesource';
 
-const BASE_URL = 'https://cors-proxy.fringe.zone/https://merchant-api-sandbox.shipper.id';
-
+const BASE_URL = process.env.SHIPPER_URL;
+const API_KEY = process.env.SHIPPER_API_KEY;
+const CORS_KEY = process.env.SHIPPER_CORS_KEY;
 
 const style = {
   position: 'absolute',
