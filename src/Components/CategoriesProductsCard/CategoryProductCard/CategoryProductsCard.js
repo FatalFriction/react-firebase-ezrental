@@ -35,11 +35,10 @@ const CategoryProductsCard = ({ products }) => {
   const handleClose = () => setOpen(false);
   
   // Get user authentication status from Redux state
-  const user = useSelector(state => state.user);
+  const user = useSelector(state => state.userAuth);
 
   useEffect(() => {
     let isMounted = true;
-
     if (isActive) {
       setTimeout(() => {
         if (isMounted) {
@@ -58,6 +57,7 @@ const CategoryProductsCard = ({ products }) => {
   };
 
   const onClickHandler = () => {
+    console.log(user)
     if (!user) {
       // Redirect to login page if user is not authenticated
       history.push('/login');
