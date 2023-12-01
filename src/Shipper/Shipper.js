@@ -6,9 +6,9 @@ import './Shipper.css'
 import { DataGrid } from '@mui/x-data-grid';
 import { PriceColumns } from './datatablesource';
 
-const BASE_URL = process.env.SHIPPER_URL;
-const API_KEY = process.env.SHIPPER_API_KEY;
-const CORS_KEY = process.env.SHIPPER_CORS_KEY;
+const BASE_URL = process.env.REACT_APP_SHIPPER_URL;
+const API_KEY = process.env.REACT_APP_SHIPPER_API_KEY;
+const CORS_KEY = process.env.REACT_APP_SHIPPER_CORS_KEY;
 
 const style = {
   position: 'absolute',

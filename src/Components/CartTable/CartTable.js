@@ -256,20 +256,18 @@ const CartTable = () => {
                   <td className={styles.tdStyles}>Delivery Cost</td>
                   <td className={styles.tdStyles}>{selectedData ? formatPrice(selectedData.total_price) : "Not available"}</td>
                 </tr>
-                  <br/>
+                  <tr><br/></tr>
                 <tr>
                   <td className={styles.tdStyles}>Total</td>
                   <td className={styles.tdStyles}>{formatPrice(calculateTotalCart(Carts))}</td>
                 </tr>
                 <tr>
-
                   <div className={styles.phoneNumberInput}>
                     <Input required type="tel" placeholder="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
                   </div>
                   <div className={styles.addressInput}>
                     <Shipper onUserPick={handleUserPick} itemval={total}/>
                   </div>
-                  
                 </tr>
                 <tr className={styles.btn}>
                   <td><Button variant="contained" endIcon={<Send />} onClick={handleCheckout} className={styles.checkout} >Checkout</Button></td>
