@@ -277,7 +277,6 @@ const Shipper = ({onUserPick, itemval}) => {
   
       setResult(dataWithIds);
   
-      console.log("Data with IDs:", dataWithIds);
     }
   }, [price]);
 
