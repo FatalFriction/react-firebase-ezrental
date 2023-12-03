@@ -5,13 +5,12 @@ import { Player } from '@lottiefiles/react-lottie-player';
 import { useHistory } from 'react-router-dom';
 import './Success.styles.css';
 import { Button } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { resetCart } from '../../Redux/cart/cart_actions';
 
 const CheckoutSuccess = () => {
   const history = useHistory();
   const url = 'https://assets10.lottiefiles.com/packages/lf20_m3ixidnq.json';
-  const docRef = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
   const handleclick = () => {
@@ -33,8 +32,7 @@ const CheckoutSuccess = () => {
       />
       <h1 className='head'>You're booked!</h1>
       <p className='para'>We've Got Your Rental request<br /> Find all your booked services in My Bookings.</p>
-      <p>Save your Transaction Number</p>
-      <Button>{docRef.docRef}</Button>
+      <p>Please save your Transaction Number</p>
       <br/>
       <Button
         size="large"

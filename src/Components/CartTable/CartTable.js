@@ -19,11 +19,13 @@ import moment from 'moment/moment';
 import { toast } from 'react-toastify';
 import { Send } from '@mui/icons-material';
 import Shipper from '../../Shipper/Shipper';
+import axios from 'axios';
+
 
 const CartTable = () => {
   const { Carts } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const history = useHistory();  
 
   const url = 'https://assets9.lottiefiles.com/private_files/lf30_e3pteeho.json';
 
@@ -94,18 +96,48 @@ const CartTable = () => {
               toast.error('Please enter a valid phone number.');
               return;
             }
-        
-  
+
+      const total = calculateTotalCart(Carts);
+       
       const docRef = await addDoc(collection(db, 'order'), transactionData);
       dispatch(setDocRef(docRef.id)); // Dispatch the action to store the docRef in Redux
-  
-      history.push('/checkout/success');
+      // Create transaction using Midtrans API
+      let ids = docRef.id
+            
+      const secret = process.env.REACT_APP_SERVER_KEY
+      const encoded = btoa(secret + ":") 
+      const AUTH_STRING = `Basic ${encoded}`
+
+      let data = {
+        transaction_details: {
+          order_id: ids,
+          gross_amount: total
+        }
+      }
+      
+      const datas = JSON.stringify(data)
+      await axios.post('https://api.sandbox.midtrans.com/v1/payment-links',
+        datas,  // No need to wrap datas in an object here
+        {
+          headers: {
+            Authorization: AUTH_STRING,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        }).then((response) => {
+          const { payment_url } = response.data;
+          window.open(payment_url, "_blank")
+          // console.log("received", response.data);  // Access response.data instead of response
+        }).catch((error) => {
+          console.log("error", error);
+        });
+      
+      history.push('/');
     } catch (error) {
       console.error('Error adding transaction:', error);
       toast.error('An error occurred while processing your transaction.');
     }
   };
-
 
   const calculateTotalCart = (cartItems) => {
     let total = 0;
@@ -127,7 +159,6 @@ const CartTable = () => {
     }
   };
   
-
   const handleDateChange = async (itemId, date) => {
     if (typeof date === 'string') {
       const [startDateStr, endDateStr] = date.split('to').map((str) => str.trim());
