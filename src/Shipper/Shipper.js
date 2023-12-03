@@ -6,7 +6,7 @@ import './Shipper.css'
 import { DataGrid } from '@mui/x-data-grid';
 import { PriceColumns } from './datatablesource';
 
-const BASE_URL = process.env.REACT_APP_SHIPPER_URL;
+const BASE_URL = `${process.env.REACT_APP_CORS_URL}/${process.env.REACT_APP_SHIPPER_URL}`;
 const API_KEY = process.env.REACT_APP_SHIPPER_API_KEY;
 const CORS_KEY = process.env.REACT_APP_SHIPPER_CORS_KEY;
 
