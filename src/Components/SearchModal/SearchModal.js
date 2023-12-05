@@ -12,6 +12,8 @@ const SearchModal = ({ open, handleClose }) => {
   const products = useSelector((state) => state.sproductsReducer);
 
   useEffect(() => {
+    if(!searchQuery || searchQuery.trim() === "") return
+
     dispatch(fetchProducts(searchQuery));
   }, [dispatch, searchQuery]);
 
@@ -72,7 +74,7 @@ const SearchModal = ({ open, handleClose }) => {
                 alignItems="center"
                 spacing={3}
               >
-                {products.products.map((product) => (
+                {products.products.slice(0,6).map((product) => (
                   <Grid
                     item
                     xs={products.products.length === 1 ? 12 : 12}
