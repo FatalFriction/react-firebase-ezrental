@@ -46,7 +46,7 @@ const HomeScreen = () => {
       </SectionContainer>
 
       <SectionContainer padding="py-5">
-        <Products sliceStart={0} sliceEnd={8} />
+        <Products slicer={8} />
       </SectionContainer>
       {/* [[[[[[[[ •• End products Section •• ]]]]]]]] */}
 

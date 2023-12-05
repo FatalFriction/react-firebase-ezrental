@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Card, Grid, IconButton, Modal, Paper } from '@mui/material';
+import { Box, Card, Grid, Modal, Paper } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../../Redux/SearchProducts/products_actions';
 import { searchBoxStyle, searchInputStyle } from '../../Components/ProductsCard/ProductsCard.styles';
@@ -16,10 +16,6 @@ const SearchModal = ({ open, handleClose }) => {
 
     dispatch(fetchProducts(searchQuery));
   }, [dispatch, searchQuery]);
-
-  const handleSearch = () => {
-    dispatch(fetchProducts(searchQuery));
-  };
 
   return (
     <Modal

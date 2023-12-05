@@ -6,9 +6,12 @@ import AppCol from '../Responsive/AppCol/AppCol';
 
 import { fetchProducts } from '../../Redux/products/products_actions';
 
-const Products = ({ sliceStart, sliceEnd }) => {
+const Products = ({ slicer }) => {
   const { products, loading } = useSelector((state) => state.allProducts);
   const dispatch = useDispatch();
+
+  const first = ~~(Math.random() * (products.lenght - slicer) +1)
+  const last = first + slicer
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,7 +26,7 @@ const Products = ({ sliceStart, sliceEnd }) => {
         products &&
         products
           .filter((product) => product.availability !== "Out of stock") // filter out products with availability "Out of stock"
-          .slice(sliceStart, sliceEnd)
+          .slice(first, last)
           .map((product) => (
             <AppCol
               key={product.uid}
