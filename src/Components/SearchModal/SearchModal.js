@@ -41,14 +41,6 @@ const SearchModal = ({ open, handleClose }) => {
             <h2>
               <Grid container spacing={2}>
                 <Grid item xs="auto">
-                  <IconButton
-                    color="info"
-                    size="medium"
-                    aria-label="onoff"
-                    onClick={handleSearch}
-                  >
-                    {/* Add your search icon or button here */}
-                  </IconButton>
                 </Grid>
                 <Grid item xs={11.5}>
                   <input
