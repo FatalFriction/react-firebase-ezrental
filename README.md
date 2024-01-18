@@ -44,3 +44,6 @@ To create a production build:
 ```sh
 npm run build
 ```
+
+To simulate the payment please visit following link
+https://simulator.sandbox.midtrans.com/bca/va/payment
